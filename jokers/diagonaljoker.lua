@@ -1,0 +1,82 @@
+
+SMODS.Joker{ --Diagonal Joker
+    key = "diagonaljoker",
+    config = {
+        extra = {
+            play_size_increase = '2',
+            discard_size_increase = '2',
+            discount_amount = '2'
+        }
+    },
+    loc_txt = {
+        ['name'] = 'Diagonal Joker',
+        ['text'] = {
+            [1] = 'Increase {C:enhanced}Select Size{} By {C:attention}2{}.',
+            [2] = '{C:money}-2 Dollars {}off of Shop Items'
+        },
+        ['unlock'] = {
+            [1] = 'Unlocked by default.'
+        }
+    },
+    pos = {
+        x = 3,
+        y = 4
+    },
+    display_size = {
+        w = 71 * 1.4, 
+        h = 95 * 1.4
+    },
+    cost = 7,
+    rarity = "toontast_epic",
+    blueprint_compat = true,
+    eternal_compat = true,
+    perishable_compat = false,
+    unlocked = true,
+    discovered = true,
+    atlas = 'CustomJokers',
+    pools = { ["toontast_toontast_jokers"] = true },
+    
+    calculate = function(self, card, context)
+    end,
+    
+    add_to_deck = function(self, card, from_debuff)
+        SMODS.change_play_limit(2)
+        SMODS.change_discard_limit(2)
+        G.E_MANAGER:add_event(Event({
+            func = function()
+                for k, v in pairs(G.I.CARD) do
+                if v.set_cost then v:set_cost() end
+                end
+                return true
+            end
+        }))
+    end,
+    
+    remove_from_deck = function(self, card, from_debuff)
+        SMODS.change_play_limit(-2)
+        SMODS.change_discard_limit(-2)
+        G.E_MANAGER:add_event(Event({
+            func = function()
+                for k, v in pairs(G.I.CARD) do
+                if v.set_cost then v:set_cost() end
+                end
+                return true
+            end
+        }))
+    end
+}
+
+
+local card_set_cost_ref = Card.set_cost
+function Card:set_cost()
+    card_set_cost_ref(self)
+    
+    if next(SMODS.find_card("j_toontast_diagonaljoker")) then
+        if (self.ability.set == 'Joker' or self.ability.set == 'Tarot' or self.ability.set == 'Planet' or self.ability.set == 'Spectral' or self.ability.set == 'Enhanced' or self.ability.set == 'Booster' or self.ability.set == 'Voucher') then
+            self.cost = math.max(0, self.cost - (2))
+        end
+    end
+    
+    self.sell_cost = math.max(1, math.floor(self.cost / 2)) + (self.ability.extra_value or 0)
+    self.sell_cost_label = self.facing == 'back' and '?' or self.sell_cost
+end
