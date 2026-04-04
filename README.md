@@ -16,3 +16,8 @@ Balatro mod Loosely Themed around Toontastic 3d
 1 Voucher
 
 Made in Jokerforge
+
+
+
+
+please dont report bugs about the mod breaking on mac, linux, ios or android,
